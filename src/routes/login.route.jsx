@@ -20,6 +20,7 @@ import { Separator } from "@/components/ui/separator";
 import { LoginSchema } from "@/schemas/login.schema";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/shared/password-input";
+import { Button } from "@/components/ui/button";
 
 export const LoginPage = () => {
 	const form = useForm({
@@ -60,6 +61,9 @@ export const LoginPage = () => {
 									</FormItem>
 								)}
 							/>
+							<Button type="submit" className="w-full">
+								Submit
+							</Button>
 						</form>
 					</Form>
 					<Separator />
