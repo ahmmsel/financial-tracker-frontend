@@ -21,14 +21,40 @@ import { LoginSchema } from "@/schemas/login.schema";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/shared/password-input";
 import { Button } from "@/components/ui/button";
+import { useMutation } from "@apollo/client";
+import { LOGIN } from "@/graphql/mutations/user.mutation";
+import { GET_AUTHENTICATED_USER } from "@/graphql/queries/user.query";
+import { toast } from "@/components/ui/use-toast";
 
 export const LoginPage = () => {
 	const form = useForm({
 		resolver: zodResolver(LoginSchema),
 	});
 
+	const [login, { loading }] = useMutation(LOGIN, {
+		refetchQueries: [GET_AUTHENTICATED_USER],
+	});
+
+	const onSubmit = async (values) => {
+		try {
+			await login({
+				variables: {
+					input: {
+						username: values.username,
+						password: values.password,
+					},
+				},
+			});
+		} catch {
+			toast({
+				title: "Something went wrong",
+				variant: "destructive",
+			});
+		}
+	};
+
 	return (
-		<main className="centerd">
+		<main className="flex flex-col items-center justify-center my-6">
 			<Card>
 				<CardHeader>
 					<CardTitle>Login</CardTitle>
@@ -36,7 +62,7 @@ export const LoginPage = () => {
 				</CardHeader>
 				<CardContent className="flex flex-col gap-4">
 					<Form {...form}>
-						<form className="space-y-3">
+						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
 							<FormField
 								control={form.control}
 								name="username"
@@ -61,7 +87,11 @@ export const LoginPage = () => {
 									</FormItem>
 								)}
 							/>
-							<Button type="submit" className="w-full">
+							<Button
+								disabled={loading || !form.formState.isValid}
+								type="submit"
+								className="w-full"
+							>
 								Submit
 							</Button>
 						</form>

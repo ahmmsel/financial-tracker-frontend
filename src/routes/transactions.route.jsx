@@ -10,8 +10,6 @@ export const TransactionsPage = () => {
 
 	const categoryQuery = searchParams.get("category");
 
-	console.log(categoryQuery);
-
 	return (
 		<main className="wrapper space-y-6 my-4">
 			{/*<div className="text-primary-foreground"></div>*/}

@@ -22,21 +22,49 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { useMutation } from "@apollo/client";
+import { SIGN_UP } from "@/graphql/mutations/user.mutation";
+import { toast } from "@/components/ui/use-toast";
+import { GET_AUTHENTICATED_USER } from "@/graphql/queries/user.query";
 
 export const SignupPage = () => {
+	const [signup, { loading }] = useMutation(SIGN_UP, {
+		refetchQueries: [GET_AUTHENTICATED_USER],
+	});
+
 	const form = useForm({
 		resolver: zodResolver(SignupSchema),
 	});
 
+	const onSubmit = async (values) => {
+		try {
+			await signup({
+				variables: {
+					input: {
+						username: values.username,
+						name: values.name,
+						password: values.password,
+						gender: values.gender,
+					},
+				},
+			});
+		} catch {
+			toast({
+				title: "Something Went Wrong",
+				variant: "destructive",
+			});
+		}
+	};
+
 	return (
-		<main className="centerd">
+		<main className="flex flex-col items-center justify-center my-10">
 			<Card>
 				<CardHeader>
 					<CardTitle>Sign Up</CardTitle>
 				</CardHeader>
 				<CardContent className="flex flex-col gap-4">
 					<Form {...form}>
-						<form className="space-y-3">
+						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 								<FormField
 									control={form.control}
@@ -112,7 +140,11 @@ export const SignupPage = () => {
 									</FormItem>
 								)}
 							/>
-							<Button type="submit" className="w-full">
+							<Button
+								type="submit"
+								disabled={loading || !form.formState.isValid}
+								className="w-full"
+							>
 								Submit
 							</Button>
 						</form>

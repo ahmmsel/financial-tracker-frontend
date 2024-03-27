@@ -12,9 +12,28 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTheme } from "@/components/providers/theme-provider";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
+import { useMutation } from "@apollo/client";
+import { LOGOUT } from "@/graphql/mutations/user.mutation";
+import { GET_AUTHENTICATED_USER } from "@/graphql/queries/user.query";
 
 export const UserDropDownMenu = () => {
 	const { setTheme } = useTheme();
+
+	const [logout] = useMutation(LOGOUT, {
+		refetchQueries: [GET_AUTHENTICATED_USER],
+	});
+
+	const handleLogout = async () => {
+		try {
+			await logout();
+		} catch {
+			toast({
+				title: "Faild to logout",
+				variant: "destructive",
+			});
+		}
+	};
 
 	return (
 		<DropdownMenu>
@@ -40,16 +59,16 @@ export const UserDropDownMenu = () => {
 						Settings
 					</Link>
 				</DropdownMenuItem>
-				<DropdownMenuItem onClick={() => setTheme("light")}>
+				<DropdownMenuItem role="button" onClick={() => setTheme("light")}>
 					<Sun className="mr-2 w-4 h-4" />
 					Light
 				</DropdownMenuItem>
-				<DropdownMenuItem onClick={() => setTheme("dark")}>
+				<DropdownMenuItem role="button" onClick={() => setTheme("dark")}>
 					<Moon className="mr-2 w-4 h-4" />
 					Dark
 				</DropdownMenuItem>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem>
+				<DropdownMenuItem role="button" onClick={handleLogout}>
 					<LogOut className="mr-2 w-4 h-4" />
 					Logout
 				</DropdownMenuItem>
