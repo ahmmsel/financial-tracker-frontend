@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-export const CreateTransaction = z.object({
+export const UpdateTransaction = z.object({
 	description: z.string(),
 	paymentType: z.string(),
 	category: z.enum(["INCOME", "EXPENSE", "INVESTMENT"]),
